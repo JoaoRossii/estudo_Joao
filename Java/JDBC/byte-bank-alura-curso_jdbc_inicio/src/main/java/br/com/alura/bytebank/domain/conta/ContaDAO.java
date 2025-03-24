@@ -1,5 +1,6 @@
 package br.com.alura.bytebank.domain.conta;
 
+import br.com.alura.bytebank.domain.RegraDeNegocioException;
 import br.com.alura.bytebank.domain.cliente.Cliente;
 import br.com.alura.bytebank.domain.cliente.DadosCadastroCliente;
 
@@ -108,5 +109,41 @@ public class ContaDAO {
             throw new RuntimeException(e);
         }
         return conta;
+    }
+
+    public void alterar(Integer numero, BigDecimal valor) {
+        PreparedStatement ps;
+        String sql = "UPDATE conta SET saldo = ? WHERE numero = ?";
+
+        try {
+            ps = conn.prepareStatement(sql);
+
+            ps.setBigDecimal(1, valor);
+            ps.setInt(2, numero);
+
+            ps.execute();
+            ps.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void realizarSaque(Integer numeroDaConta, BigDecimal valor) {
+        var conta = listarPorNumero(numeroDaConta);
+
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RegraDeNegocioException("Valor do saque deve ser superior a zero!");
+        }
+
+        if (valor.compareTo(conta.getSaldo()) > 0) {
+            throw new RegraDeNegocioException("Saldo insuficiente!");
+        }
+
+        BigDecimal novoValor = conta.getSaldo().subtract(valor);
+        Connection conn = connection.recuperarConexao();
+        new ContaDAO(conn).alterar(conta.getNumero(), novoValor);
     }
 }
