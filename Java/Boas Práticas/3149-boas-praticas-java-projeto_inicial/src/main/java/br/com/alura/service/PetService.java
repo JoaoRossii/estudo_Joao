@@ -1,5 +1,6 @@
 package br.com.alura.service;
 
+import br.com.alura.Command;
 import br.com.alura.client.ClientHttpConfiguration;
 import br.com.alura.domain.Pet;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,5 +86,19 @@ public class PetService {
             }
         }
         reader.close();
+    }
+
+    public static class ImportarPetsDoAbrigoCommand implements Command {
+        @Override
+        public void execute() {
+            try {
+                ClientHttpConfiguration client = new ClientHttpConfiguration();
+                AbrigoService abrigoService = new AbrigoService(client);
+
+                abrigoService.cadastrarAbrigo();
+            } catch (IOException | InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 }
