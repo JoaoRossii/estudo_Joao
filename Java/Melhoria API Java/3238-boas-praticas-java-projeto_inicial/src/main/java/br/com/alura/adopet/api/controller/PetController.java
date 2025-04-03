@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.controller;
 
+import br.com.alura.adopet.api.dto.PetDto;
 import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.PetRepository;
@@ -21,9 +22,9 @@ public class PetController {
     private PetService petService;
 
     @GetMapping
-    public ResponseEntity<List<Pet>> listarTodosDisponiveis() {
+    public ResponseEntity<List<PetDto>> listarTodosDisponiveis() {
         try {
-            List<Pet> pets = petService.listarPetsDisponiveis();
+            List<PetDto> pets = petService.listarPetsDisponiveis();
             return ResponseEntity.ok(pets);
         } catch (ValidacaoException e){
             return ResponseEntity.badRequest().build();
